@@ -25,11 +25,12 @@ var serveCmd = &cobra.Command{
 }
 
 func runServe() {
+	// create allocator context for use with creating a browser context later
+	allocatorContext, cancel := chromedp.NewRemoteAllocator(context.Background(), applicationChromeHeadlessWSURL)
+	defer cancel()
+
 	// create context
-	ctx, cancel := chromedp.NewContext(
-		context.Background(),
-		// chromedp.WithDebugf(log.Printf),
-	)
+	ctx, cancel := chromedp.NewContext(allocatorContext)
 	defer cancel()
 
 	// capture screenshot of an element
