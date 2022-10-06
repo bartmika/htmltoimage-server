@@ -1,0 +1,44 @@
+# HOW TO USE:
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+#   docker-compose -p dev_biometricscloud_backend -f dev.docker-compose.yml up   #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+
+version: '3.8'
+services:
+  app:
+    container_name: htmltoimage_server
+    stdin_open: true
+    environment:
+        HTMLTOIMAGE_SERVER_ADDRESS: 0.0.0.0:8002
+        HTMLTOIMAGE_SERVER_HOME_DIRECTORY_PATH: /data
+        HTMLTOIMAGE_SERVER_CHROME_HEADLESS_WS_URL: ws://browserless:9090?token=a96a96b0-1234-11e8-a355-529269fb1459
+    build:
+      context: .
+      dockerfile: ./dev.Dockerfile
+    # Connect the local filesystem with the docker filesystem.
+    volumes:
+      - ./data:/go/src/github.com/bartmika/htmltoimage-server/data
+    restart: on-failure:10 # Notes via https://docs.docker.com/engine/reference/run/#restart-policies---restart
+    # depends_on:
+    #   - browserless
+    # links:
+    #   - "browserless:browserless" #links to browserless container
+    # networks:
+    #   - htmltoimage-network
+
+  # browserless:
+  #   image: browserless/chrome:latest # https://hub.docker.com/r/browserless/chrome
+  #   env_file:
+  #    - ./.env
+  #   container_name: "browserless"
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - htmltoimage-network
+  #   restart: on-failure:10 # Notes via https://docs.docker.com/engine/reference/run/#restart-policies---restart
+
+# volumes:
+#     htmltoimage_server_data:
+
+# networks:
+#   htmltoimage-network:

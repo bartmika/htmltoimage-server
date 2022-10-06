@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  start:
+    cmds:
+      - docker-compose -p htmltoimage_server -f dev.docker-compose.yml up
+
+  end:
+    cmds:
+      - docker-compose -p htmltoimage_server -f dev.docker-compose.yml down
+
+  console:
+    cmds:
+      - docker exec -it htmltoimage_server /bin/sh
