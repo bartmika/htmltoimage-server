@@ -9,23 +9,22 @@ services:
     container_name: htmltoimage_server_app
     stdin_open: true
     environment:
-        HTMLTOIMAGE_SERVER_ADDRESS: 0.0.0.0:8002
-        HTMLTOIMAGE_SERVER_HOME_DIRECTORY_PATH: /data
+        HTMLTOIMAGE_SERVER_IP: 0.0.0.0
+        HTMLTOIMAGE_SERVER_PORT: 8002
         HTMLTOIMAGE_SERVER_CHROME_HEADLESS_WS_URL: ws://browserless:9090
     build:
       context: .
       dockerfile: ./dev.Dockerfile
-    # Connect the local filesystem with the docker filesystem.
-    volumes:
-      - ./data:/go/src/github.com/bartmika/htmltoimage-server/data
-    restart: on-failure:10 # Notes via https://docs.docker.com/engine/reference/run/#restart-policies---restart
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
     depends_on:
       - browserless
     links:
-      - browserless #links to browserless container
+      - browserless
 
   browserless:
-    image: browserless/chrome:latest # https://hub.docker.com/r/browserless/chrome
+    image: browserless/chrome:latest # https://hub.docker.com/r/browserless/chrome | https://docs.browserless.io/docs/docker.html
     environment:
       - DEBUG=browserless:*
       - MAX_CONCURRENT_SESSIONS=10
@@ -38,7 +37,4 @@ services:
       - PORT=9090
       - WORKSPACE_DELETE_EXPIRED=true
     container_name: "htmltoimage_server_browserless"
-    restart: on-failure:10
-
-# volumes:
-#     htmltoimage_server_data:
+    restart: unless-stopped

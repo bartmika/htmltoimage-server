@@ -1,13 +1,15 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 
-	"github.com/chromedp/chromedp"
 	"github.com/spf13/cobra"
+
+	"github.com/bartmika/htmltoimage-server/internal/app"
+	"github.com/bartmika/htmltoimage-server/internal/config"
+	"github.com/bartmika/htmltoimage-server/internal/inputports/rpc"
+	"github.com/bartmika/htmltoimage-server/pkg/uuid"
 )
 
 func init() {
@@ -25,49 +27,23 @@ var serveCmd = &cobra.Command{
 }
 
 func runServe() {
-	// create allocator context for use with creating a browser context later
-	allocatorContext, cancel := chromedp.NewRemoteAllocator(context.Background(), applicationChromeHeadlessWSURL)
-	defer cancel()
+	// Load up all the environment variables.
+	appConf := config.AppConfig()
 
-	// create context
-	ctx, cancel := chromedp.NewContext(allocatorContext)
-	defer cancel()
+	uuidp := uuid.NewUUIDProvider()
 
-	// capture screenshot of an element
-	var buf []byte
-	if err := chromedp.Run(ctx, elementScreenshot(`https://pkg.go.dev/`, `img.Homepage-logo`, &buf)); err != nil {
-		log.Fatal(err)
-	}
-	if err := ioutil.WriteFile("data/elementScreenshot.png", buf, 0o644); err != nil {
+	// Setup the application that handles our apps logic.
+	a, err := app.New(appConf, uuidp)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	// capture entire browser viewport, returning png with quality=90
-	if err := chromedp.Run(ctx, fullScreenshot(`https://brank.as/`, 90, &buf)); err != nil {
+	// Setup the RPC server to serve our app.
+	srv := rpc.NewServer(appConf, a)
+
+	// Run in the forground the RPC server. When the server gets termination
+	// signal then the server will terminate.
+	if err := srv.RunMainRuntimeLoop(); err != nil {
 		log.Fatal(err)
-	}
-	if err := ioutil.WriteFile("data/fullScreenshot.png", buf, 0o644); err != nil {
-		log.Fatal(err)
-	}
-
-	log.Printf("wrote elementScreenshot.png and fullScreenshot.png")
-}
-
-// elementScreenshot takes a screenshot of a specific element.
-func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
-	return chromedp.Tasks{
-		chromedp.Navigate(urlstr),
-		chromedp.Screenshot(sel, res, chromedp.NodeVisible),
-	}
-}
-
-// fullScreenshot takes a screenshot of the entire browser viewport.
-//
-// Note: chromedp.FullScreenshot overrides the device's emulation settings. Use
-// device.Reset to reset the emulation and viewport settings.
-func fullScreenshot(urlstr string, quality int, res *[]byte) chromedp.Tasks {
-	return chromedp.Tasks{
-		chromedp.Navigate(urlstr),
-		chromedp.FullScreenshot(res, quality),
 	}
 }
