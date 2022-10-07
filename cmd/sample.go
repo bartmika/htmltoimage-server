@@ -42,6 +42,5 @@ var sampleCmd = &cobra.Command{
 			log.Fatal("Sample command failed writing file with error:", err)
 		}
 		log.Println("Saved file: screenshot.png")
-
 	},
 }

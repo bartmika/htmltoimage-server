@@ -80,18 +80,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Execute the remote call to the HTML to Image server.
-	res, err := client.Screenshot("https://brank.as/")
-	if err != nil {
-		log.Fatal("Sample command failed generating image with error:", err)
-	}
+    // Execute the remote call.
+    imgBin, err := client.Screenshot("https://brank.as/")
+    if err != nil {
+        log.Fatal("Sample command failed generating image with error:", err)
+    }
 
-	// Save our file.
-	if err := ioutil.WriteFile("data/"+res.FileName+".png", res.Content, 0o644); err != nil {
-		log.Fatal("Sample command failed writing file with error:", err)
-	}
-	log.Println("Saved file:", res.FileName)
+    // Save our file.
+    if err := ioutil.WriteFile("data/screenshot.png", imgBin, 0o644); err != nil {
+        log.Fatal("Sample command failed writing file with error:", err)
+    }
+    log.Println("Saved file: screenshot.png")
 }
 ```
 
-Finally if you look in your `data` folder, you'll see the image downloaded!
+Finally if you look in your `data` folder, you'll see the `screenshot.png` image downloaded!

@@ -24,6 +24,7 @@ services:
       - browserless
 
   browserless:
+    container_name: "htmltoimage_server_browserless"
     image: browserless/chrome:latest # https://hub.docker.com/r/browserless/chrome | https://docs.browserless.io/docs/docker.html
     environment:
       - DEBUG=browserless:*
@@ -36,5 +37,4 @@ services:
       - ENABLE_DEBUGGER=false
       - PORT=9090
       - WORKSPACE_DELETE_EXPIRED=true
-    container_name: "htmltoimage_server_browserless"
     restart: unless-stopped
