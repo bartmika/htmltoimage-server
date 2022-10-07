@@ -1,7 +1,7 @@
 # HOW TO USE:
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
-#   docker-compose -p dev_biometricscloud_backend -f dev.docker-compose.yml up   #
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -#
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+#   docker-compose -p dev_htmltoimage_server -f dev.docker-compose.yml up   #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 version: '3.8'
 services:
