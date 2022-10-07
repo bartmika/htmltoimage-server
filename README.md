@@ -81,7 +81,7 @@ func main() {
 	}
 
     // Execute the remote call.
-    imgBin, err := client.Screenshot("https://brank.as/")
+    imgBin, err := client.Screenshot("https://bartlomiejmika.com")
     if err != nil {
         log.Fatal("Sample command failed generating image with error:", err)
     }
