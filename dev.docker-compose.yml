@@ -14,7 +14,7 @@ services:
         HTMLTOIMAGE_SERVER_CHROME_HEADLESS_WS_URL: ws://browserless:9090
     build:
       context: .
-      dockerfile: ./dev.Dockerfile
+      dockerfile: ./Dockerfile
     restart: unless-stopped
     ports:
       - "8002:8002"

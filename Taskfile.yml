@@ -15,9 +15,9 @@ tasks:
 
   deploy:
     cmds:
-      - docker build -t bmika/htmltoimage-server:latest .
-      - docker tag bmika/htmltoimage-server:latest bmika/htmltoimage-server:latest
-      - docker push bmika/htmltoimage-server:latest
+      - docker build -f Dockerfile -t bartmika/htmltoimage-server:latest --platform linux/amd64 .
+      - docker tag bartmika/htmltoimage-server:latest bartmika/htmltoimage-server:latest
+      - docker push bartmika/htmltoimage-server:latest
 
   # The following task will perform a vulnerability scan on our golang project and display any issues found.
   scan:
@@ -31,3 +31,11 @@ tasks:
     cmds:
       - go get -u ./...
       - go mod tidy
+
+  logout:
+    cmds:
+      - docker logout
+
+  login:
+    cmds:
+      - docker login

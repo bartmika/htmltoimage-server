@@ -14,11 +14,11 @@ type HTMLToImageService struct {
 	addr          string
 }
 
-func NewClient(addr string, retryLimit uint8, delayDuration time.Duration) *HTMLToImageService {
+func NewClient(addr string, retryLimit uint8, delayDuration time.Duration) (*HTMLToImageService, error) {
 	client, err := rpc.DialHTTP("tcp", addr)
 	if err != nil {
 		log.Println("RPC CLIENT ERROR | HTMLToImageService | Dialing TCP Error:", err)
-		return nil
+		return nil, err
 	}
 
 	log.Println("RPC CLIENT | Connected to RPC server.")
@@ -29,7 +29,7 @@ func NewClient(addr string, retryLimit uint8, delayDuration time.Duration) *HTML
 		retryCount:    0,
 		DelayDuration: delayDuration,
 		addr:          addr,
-	}
+	}, nil
 }
 
 // Function used to make RPC calls with retry functionality in case the RPC

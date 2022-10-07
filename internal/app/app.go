@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 
 	"github.com/bartmika/htmltoimage-server/internal/config"
 	"github.com/bartmika/htmltoimage-server/pkg/dtos"
@@ -10,7 +11,7 @@ import (
 )
 
 type HTMLToImageApp interface {
-	GenerateImage(dto *dtos.HTMLToImageRequestDTO) (*dtos.HTMLToImageResponseDTO, error)
+	Screenshot(dto *dtos.ScreenshotRequestDTO) (*dtos.ScreenshotResponseDTO, error)
 }
 
 type htmlToImageApp struct {
@@ -25,7 +26,18 @@ func New(appConfig *config.Conf, uuidp uuid.Provider) (HTMLToImageApp, error) {
 	}, nil
 }
 
-func (app *htmlToImageApp) GenerateImage(dto *dtos.HTMLToImageRequestDTO) (*dtos.HTMLToImageResponseDTO, error) {
+func (app *htmlToImageApp) Screenshot(dto *dtos.ScreenshotRequestDTO) (*dtos.ScreenshotResponseDTO, error) {
+	// Defensive Code:
+	if dto.ImageType != "png" {
+		return nil, errors.New("only accepted image type is currently the value `png`")
+	}
+	if dto.ImageQuality < 0 {
+		return nil, errors.New("image quality cannot be less then `0`")
+	}
+	if dto.ImageQuality > 100 {
+		return nil, errors.New("image quality cannot be greater then `100`")
+	}
+
 	// create allocator context for use with creating a browser context later
 	allocatorContext, allocatorCancel := chromedp.NewRemoteAllocator(context.Background(), app.AppConfig.ChromeHeadless.Address)
 
@@ -38,11 +50,11 @@ func (app *htmlToImageApp) GenerateImage(dto *dtos.HTMLToImageRequestDTO) (*dtos
 	var buf []byte
 
 	// capture entire browser viewport, returning png with quality=90
-	if err := chromedp.Run(ctx, fullScreenshot(dto.WebsiteURL, 90, &buf)); err != nil {
+	if err := chromedp.Run(ctx, fullScreenshot(dto.WebsiteURL, dto.ImageQuality, &buf)); err != nil {
 		return nil, err
 	}
 
-	return &dtos.HTMLToImageResponseDTO{
+	return &dtos.ScreenshotResponseDTO{
 		FileName: app.UUIDProvider.NewUUID(),
 		Content:  buf,
 	}, nil
