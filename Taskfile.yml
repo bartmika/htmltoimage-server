@@ -23,7 +23,7 @@ tasks:
   scan:
     cmds:
       - govulncheck ./...
-      - trivy image bmika/htmltoimage-server:latest
+      - trivy image bartmika/htmltoimage-server:latest
       - trivy repo https://github.com/bartmika/htmltoimage-server.git
 
   # The following command will upgade all the dependencies in this project.
@@ -38,4 +38,4 @@ tasks:
 
   login:
     cmds:
-      - docker login
+      - docker login -u bartmika
