@@ -52,9 +52,10 @@ func (app *htmlToImageApp) GenerateImage(dto *dtos.HTMLToImageRequestDTO) (*dtos
 //
 // Note: chromedp.FullScreenshot overrides the device's emulation settings. Use
 // device.Reset to reset the emulation and viewport settings.
-func fullScreenshot(urlstr string, quality int, res *[]byte) chromedp.Tasks {
+// (Source: https://github.com/chromedp/examples/blob/master/remote/main.go)
+func fullScreenshot(websiteURL string, quality int, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
-		chromedp.Navigate(urlstr),
+		chromedp.Navigate(websiteURL),
 		chromedp.FullScreenshot(res, quality),
 	}
 }
